@@ -170,6 +170,7 @@
   /* ---------- nav: scrolled state + progress + active section + orbs ---------- */
   const nav = document.getElementById("nav");
   const scrollBar = document.getElementById("scroll-bar");
+  const toTop = document.getElementById("to-top");
   const sections = document.querySelectorAll("main section[id]");
   const navLinks = document.querySelectorAll(".nav__links a");
   const orbs = document.querySelectorAll(".orb");
@@ -193,6 +194,9 @@
     const max = document.documentElement.scrollHeight - window.innerHeight;
     if (scrollBar) scrollBar.style.width = `${(y / max) * 100}%`;
 
+    // back-to-top button: show once the user has scrolled past the hero
+    if (toTop) toTop.classList.toggle("show", y > 600);
+
     // parallax ambient orbs, each drifts and breathes at its own rate
     if (!reducedMotion) {
       orbs.forEach((orb, i) => {
@@ -211,6 +215,13 @@
   };
   window.addEventListener("scroll", onScroll, { passive: true });
   onScroll();
+
+  /* ---------- back to top ---------- */
+  if (toTop) {
+    toTop.addEventListener("click", () => {
+      window.scrollTo({ top: 0, behavior: reducedMotion ? "auto" : "smooth" });
+    });
+  }
 
   /* ---------- mobile menu ---------- */
   const burger = document.getElementById("burger");

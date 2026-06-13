@@ -25,7 +25,11 @@
 
 * { margin: 0; padding: 0; box-sizing: border-box; }
 
-html { scroll-behavior: smooth; scroll-padding-top: calc(var(--nav-h) + 16px); }
+html {
+  scroll-behavior: smooth;
+  scroll-padding-top: calc(var(--nav-h) + 16px);
+  overflow-x: hidden;
+}
 
 body {
   background: var(--bg);
@@ -35,6 +39,8 @@ body {
   line-height: 1.7;
   -webkit-font-smoothing: antialiased;
   overflow-x: hidden;
+  width: 100%;
+  position: relative;
 }
 
 ::selection { background: var(--accent); color: #06281a; }
@@ -110,6 +116,42 @@ a:hover { opacity: 0.85; }
   width: 0;
   background: var(--gradient);
   transition: width 0.1s linear;
+}
+
+/* ---------- back to top ---------- */
+.to-top {
+  position: fixed;
+  bottom: 26px;
+  right: 26px;
+  z-index: 150;
+  width: 46px;
+  height: 46px;
+  display: grid;
+  place-items: center;
+  border-radius: 50%;
+  border: 1px solid rgba(100, 244, 172, 0.4);
+  background: rgba(17, 21, 29, 0.8);
+  backdrop-filter: blur(10px);
+  color: var(--accent);
+  cursor: pointer;
+  opacity: 0;
+  visibility: hidden;
+  transform: translateY(16px) scale(0.9);
+  transition: opacity 0.3s ease, transform 0.3s ease, visibility 0.3s ease,
+    box-shadow 0.25s ease, background 0.25s, color 0.25s;
+}
+.to-top.show { opacity: 1; visibility: visible; transform: none; }
+.to-top:hover {
+  background: var(--accent);
+  color: #06281a;
+  border-color: var(--accent);
+  box-shadow: 0 10px 30px -8px rgba(100, 244, 172, 0.5);
+  transform: translateY(-3px);
+}
+.to-top svg { transition: transform 0.25s ease; }
+.to-top:hover svg { transform: translateY(-2px); }
+@media (max-width: 480px) {
+  .to-top { bottom: 18px; right: 18px; width: 42px; height: 42px; }
 }
 
 /* ---------- nav ---------- */
@@ -351,6 +393,9 @@ a:hover { opacity: 0.85; }
   position: relative;
   z-index: 1;
 }
+/* let hero columns shrink instead of stretching to the terminal's long lines */
+.hero__copy, .hero__right { min-width: 0; }
+.hero__terminal, .terminal, .terminal__body { max-width: 100%; min-width: 0; }
 
 /* floating tech icons, fixed layer across the whole site */
 .tech-icons {
@@ -1159,11 +1204,13 @@ a:hover { opacity: 0.85; }
     padding: 28px 40px 32px;
     gap: 20px;
     transform: translateX(110%);
-    transition: transform 0.3s ease;
+    transition: transform 0.3s ease, visibility 0.3s ease;
     min-width: 230px;
+    max-width: 80vw;
     height: auto;
+    visibility: hidden;
   }
-  .nav__links.open { transform: none; }
+  .nav__links.open { transform: none; visibility: visible; }
   .nav__burger { display: flex; }
   .nav__cta { display: none; }
 
@@ -1177,8 +1224,58 @@ a:hover { opacity: 0.85; }
   .certs { grid-template-columns: 1fr; }
   .project--featured { grid-column: auto; }
   .section { padding: 80px 0; }
-  .cert__btn { margin-left: 0; }
+  .section--contact { padding: 96px 0; }
+  .cert { gap: 16px 20px; }
+  .cert__btn { margin-left: 0; width: 100%; }
   .hero__scroll { display: none; }
   .hero__avatar { width: 104px; height: 104px; }
   .about__highlights { grid-template-columns: 1fr; }
+  .about__card { margin-inline: auto; }
+
+  /* keep the offset border decoration inside the viewport */
+  .about__photo-frame::after { transform: translate(8px, 8px); }
+
+  /* flatten the 3D terminal tilt so it can't clip on narrow screens */
+  .terminal, .terminal:hover { transform: none; }
+  .hero__terminal { width: 100%; }
+  .terminal__title {
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+}
+
+/* ---------- small phones ---------- */
+@media (max-width: 480px) {
+  body { font-size: 16px; }
+  .container { width: min(1120px, 90%); }
+
+  .nav__inner { gap: 14px; }
+  .section { padding: 64px 0; }
+  .section--contact { padding: 76px 0; }
+  .section__title { margin-bottom: 32px; }
+  .section__title::after { display: none; }
+  .section__sub { margin: -20px 0 32px; }
+
+  .hero__name { font-size: clamp(2.6rem, 13vw, 3.4rem); }
+  .hero__bio { margin-top: 18px; }
+  .terminal__body { font-size: 0.74rem; padding: 16px 16px; }
+
+  /* full-width, thumb-friendly primary actions */
+  .hero__actions, .contact__actions { width: 100%; }
+  .hero__actions .btn, .contact__actions .btn { flex: 1 1 100%; }
+  .hero__social { gap: 16px; justify-content: space-between; }
+
+  /* roomier tap targets in the mobile menu */
+  .nav__links a { padding: 12px 14px; font-size: 0.95rem; }
+
+  /* tighter card padding to win back horizontal space */
+  .project, .skill-group, .article, .service, .edu-card { padding: 22px 20px; }
+  .cert { padding: 20px; }
+
+  .services__cta { padding: 26px 22px; }
+  .services__cta .btn { width: 100%; }
+
+  .timeline { padding-left: 26px; }
+  .timeline__marker { left: -26px; }
 }
